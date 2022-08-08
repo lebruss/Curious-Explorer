@@ -1,17 +1,8 @@
 #To-do:
-"""
-Put the X,Y coordinates and Events with Locations back in
-Save the game state / player's progress onto a file. maybe JSON
-battle system
-methods
-certain character names give certain stats
-items
-inventory per player
-maybe a GUI in tkinter where the game displays in a terminal, and within the same window there is a .png homemade art of the current location idk
-"""
+#       x, y coordinates
 #libraries
 import time, random
-
+party = []
 #locations
 location_list = ['Serbia', 'Albania', 'Helsingfors', 'Holy Roman Empire', 'Hanseatic League', 'Prussia',
                  'Iceland', 'Tallinn', 'Estonia', 'Oklahoma', 'Colorado', 'Missouri', 'Viet Nam', 'Somalia', 'Prag', 'the Library']
@@ -21,18 +12,27 @@ location = random.choice(location_list)
 first_names = ['Daniel', 'Robert', 'Dalisa', 'Abdulhakim', 'Griffin', 'Cole', 'Jonsch', 'Jacob', 'Mark', 'Jackie', 'Martha', 'Rozhan', 'გვანცა', 'Mati', 'Artur',
                 'Gabriel', 'Tanya', 'თამარ', 'საბა', 'Ngabo', 'Shpeta', 'Florian', 'Ott', 'Aili', 'Tom', 'Ann', 'Hans', 'Hayder']
 last_names = ['al Sharif', 'Hughes', 'Replogle', 'Thunderstone', 'Birdwatcher', 'Kivimägi', 'ხაჭაპურიძე']
+
 #Character template - players and NPCs
 class Character:
-    def __init__(self, name, x, y, money, level):
-        self.name = "name"
+    def __init__(self):
+        self.first_name = random.choice(first_names)
+        self.last_name = random.choice(last_names)
         self.x = 0
         self.y = 0
         self.money = 1
         self.level = 1
 
+#show character stats
+def stats(self):
+    print("Name: " + str(self.first_name) + " " + str(self.last_name))
+    print("Position: (" + str(self.x) + "," + str(self.y) + ")")
+    print("Money: " + str(self.money))
+    print("Level: " + str(self.level))
+    #return self.first_name, self.level
+
 #year
 year = random.randrange(700,2080,1)
-
 
 #welcome
 print("Welcome to " + location + ".\n" + "Thank you for being here!\n\n\n")
@@ -40,17 +40,22 @@ print("Welcome to " + location + ".\n" + "Thank you for being here!\n\n\n")
 print("The year is " + str(year) + ".")
 
 #start
-me = Character("name", 0, 0, 1, 1)
-me.name = input("What is your name, traveler?")
-#print(me.name)
-#time.sleep(5)
+me = Character()
+me.first_name = input("What is your name, traveler?\n")
+party.append(me)
+time.sleep(1)
+partysize = input("\nHow many friends are with you? ")#change this to only accept integer
+partysize = int(partysize) + 1
+time.sleep(1)
 
-#name / character generation
+#make party
 i = 1
-while True:
-    #NPC_name = random.choice(first_names) + random.choice(last_names)
-    print(i)
-    print(random.choice(first_names))
-    print(random.choice(last_names))
-    i += 1
-    time.sleep(2)
+while i < partysize:
+    friend = Character()
+    party.append(Character)
+    i = i + 1
+
+#print an example Character with all stats
+stats(me)
+
+input()
