@@ -1,22 +1,24 @@
-#To-do:
-#       x, y coordinates
+#to-do is in github commit history
 #libraries
-import time, random
+import time, random, PySimpleGUI as SG
+#time is for terminal's waiting
+#random is for random number generation, random choice from names, etc.
+#PySimpleGUI is the graphical user interface. I want to upgrade this game from text-based to window-based.
 
 #functions
-def clearScreen():#"CLEAR" TERMINAL SCREEN
+def clearScreen():#prints a looot of new lines to "clear" the terminal
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 
-def mainMenu():#MAIN MENU LOOP
+def mainMenu():#The game's main menu; user can navigate into and out of its options
     while True:
     #menu options
         clearScreen()
         print("Opportunities:\n")
-        print("1. Check in with friends")
-        print("2. Go somewhere")
-        print("3. What do we have?")
-        print("4. Socialize")
-        print("5. Exit")
+        print("1. Check in with friends")#statistics of the player and their group of NPC friends
+        print("2. Go somewhere")#travel
+        print("3. What do we have?")#check inventory
+        print("4. Socialize")#Try to meet another NPC in the current location
+        print("5. Exit")#Exit the game completely
         print("- - - - -")
         menuChoice = input()
 
@@ -24,7 +26,7 @@ def mainMenu():#MAIN MENU LOOP
         if menuChoice == "1":
             clearScreen()
             print("Party stats: \n")
-            for member in party:
+            for member in party:#for each Character in the party[] list, print their statistics with member.stats()
                 member.stats()
             print("- - - - -")
             input("Press any key to continue.")
@@ -32,7 +34,7 @@ def mainMenu():#MAIN MENU LOOP
         #move - not functional, yet. map locations to neighboring locations?
         if menuChoice == "2":
             moveChoice = 0
-            while moveChoice != "5":
+            while moveChoice != "5":#Keep this menu open until the user chooses Option 5 for exiting the Move menu
                 clearScreen()
                 print("\n1. North")
                 print("\n2. South")
@@ -42,21 +44,24 @@ def mainMenu():#MAIN MENU LOOP
                 print("- - - - -")
                 moveChoice = input()
 
-        #inventory
+        #Inventory: show the Inventory item of each Character in the user's party[]
         if menuChoice == "3":
             clearScreen()
             print("Inventory:")
             for member in party:
-                member.inventory()
+                member.inventory()#print Inventory items in list for each party[] member
             input("Press any key to continue")
         
-        #socialize
+        #socialize - I want to depthen this one with chances, etc.
         if menuChoice == "4":
             clearScreen()
             print("Socialize")
-            friend = Character(random.choice(first_names))
-            party.append(friend)
+            friend = Character(random.choice(first_names))#Create a new NPC character from "socializing" at this place
+            party.append(friend)#add this new NPC character to your user party[]; they join your adventure
+            time.sleep(random.randint(1,4))#wait, we are socializing
+            print(friend.first_name + " has decided to tag along with y'all!")
             input("Press any key to stop socializing")
+            #to-do: add some functionality about the player, or player's party, only able to welcome a new NPC if there is a common language
 
         #exit
         if menuChoice == "5":
@@ -65,19 +70,19 @@ def mainMenu():#MAIN MENU LOOP
             time.sleep(1)
             break
 
-#locations
+#locations - Possible locations in the game, including the user's random starting location
 location_list = ['Serbia', 'Albania', 'Helsingfors', 'Holy Roman Empire', 'the Hanseatic League', 'Prussia',
                  'Iceland', 'Tallinn', 'Estonia', 'Oklahoma', 'Colorado', 'Missouri', 'Viet Nam', 'Somalia', 'Prag', 'the Library',
                   'Scotland', 'Jõhvi', 'a cozy cave', 'the ocean', 'your family home', 'Corpus Cristi',
                    'Japanese Korea', 'the European Union', 'Helsinki', 'Jüri', 'Dagö', 'the Cherokee Nation', 'Haapsalu Castle', 'Greece',
                    'Iran', 'Iraq', 'Uzbekistan', 'Tajikistan', 'Samarkhand', 'Trondheim', 'Istanbul', 'Barcelona', 'Croatia',
                    'the Cyclades', 'Cyprus', 'Brazil', 'Angola', 'Kongo', 'Babylon', 'the River Styx', 'Tasmania', 'Viimsi', 'Hungary']                 
-startLocation = random.choice(location_list)
+startLocation = random.choice(location_list)#User begins the game in a random location from the list
 # dict.items() -> [(Serbia, (0, 0)),]
 # dict.keys() -> [Serbia, Albania, ...]
 # dict.values() -> [(0, 0), (10,10), ...]
 
-#names
+#names - possible names of Characters
 first_names = ['Daniel', 'Dante', 'Borges', 'Lukas', 'Henri', 'Robert', 'Dalisa', 'Abdulhakim', 'Griffin', 'Cole', 'Jonsch', 'Jacob', 'Mark', 'Jackie', 'Martha', 'Rozhan', 'Gvantsa', 'Mati', 'Artur',
                 'Gabriel', 'Tanya', 'Thanh', 'Tamar', 'Saba', 'Ngabo', 'Shpeta', 'Florian', 'Ott', 'Aili', 'Tom', 'Ann', 'Hans', 'Hayder',
                  'Valdimaar', 'Amadeus', 'Todd', 'Markko', 'Lil Al', 'Stefan', 'Klajd', 'Tonibler', 'Joonas', 'Peeter', 'Düüri',
@@ -88,11 +93,11 @@ last_names = ['al Sharif', 'Hughes', 'Replogle', 'Thunderstone', 'Birdwatcher', 
 
 #MAP_SIZE = {"x": 1000, "y": 1000}
 
-#conditions
+#conditions - mood / health attirbutes experienced by characters
 conditions = ['tired', 'mad', 'angry', 'drunk', 'excited', 'happy', 'generous', 'wakeful', 'vengeful', 'ambitious', 'curious', 'creative',
-                '', 'absentminded', 'sorrowful', 'ruminating', 'paralyzed']
+                '', 'absentminded', 'sorrowful', 'ruminating', 'paralyzed', 'normal']
 
-#Character template - players and NPCs
+#Character template - user's and NPC's attributes, statistics, information about them used in the game
 class Character:
     def __init__(self, first_name):
         self.first_name = first_name
@@ -101,14 +106,14 @@ class Character:
         self.y = 0
         self.money = 1
         self.level = 1
-        self.age = random.randint(18, 90)
-        self.possessions = ["clothes", "shoes"]
+        self.age = random.randint(18, 90)#Character's age is between 18 and 90 years old
+        self.possessions = ["clothes", "shoes"]#possessions[] is the Character's inventory
         self.languages = []
         self.hometown = random.choice(location_list)
-        self.condition = random.choice(conditions)
+        self.condition = "normal"
     #show character stats
     def stats(self):
-        print("----------" + str(self.first_name) + " " + str(self.last_name) + " from " + str(self.hometown))
+        print("----------" + str(self.first_name) + " " + str(self.last_name) + " from " + str(self.hometown))#e.g. Leb Jones from Tallinn
         #print("Location: (" + str(self.x) + "," + str(self.y) + ")")
         print("Money    : " + str(self.money))
         print("Level    : " + str(self.level))
@@ -119,27 +124,29 @@ class Character:
     #inventory
     def inventory(self):
         print("---------" + str(self.first_name) + " " + str(self.last_name))
-        for item in self.possessions:
+        for item in self.possessions:#for each item in the character's possessions[] list, print it
             print(str(item))
 
     #add money to character
     def add_money(self, amount):
         self.money += amount
 
-    #not in use at the moment    
+    #move() function; not in use yet.
     def move(self, move_x, move_y):
         x = self.x + move_x
         y = self.y + move_y
         #if (x < 0 or x > MAP_SIZE["x"] or y < 0 or y > MAP_SIZE["y"]):
             #print("YOU WILL FALL OFF THE FLAT EARTH! DONT GO THERE")
             #return
-        
+        #print("LETS SEE SOME MOVEMENT")
+        #me.move(300, 200)
+        #me.move(10000, 19292)
         self.x = x
         self.y = y
         print("NEW POSITION: ", self.x, self.y)
 
 #year
-year = random.randrange(700,2080,1)
+year = random.randrange(700,2080,1)#Game year begins between 700 and 2080.
 
 #start
 clearScreen()
@@ -155,7 +162,7 @@ time.sleep(2)
 first_name = input("What is your name, traveler?\n")
 me = Character(first_name)
 party = []
-party.append(me)
+party.append(me)#add the user's character to the Party list of characters.
 time.sleep(1)
 
 #How many friends
@@ -163,24 +170,23 @@ while True:
     try:
         partysize = int(input("\nHow many friends are with you? "))
         break
-    except ValueError:
+    except ValueError:#if user doesn't enter a valid integer input for partysize variable, prompt the user until input is acceptable
         print("Please enter an integer so we can continue.")
 time.sleep(1)
 clearScreen()
 #make party
-for i in range(partysize):
-    friend = Character(random.choice(first_names))
+for i in range(partysize):#create a user character party that is the size of partysize variable (including the user character me)
+    friend = Character(random.choice(first_names))#generate a friend Character with a random first name.
     party.append(friend)
-    
-
-#print an example Character with all stats
-#me.stats()
-
-#move
-#print("LETS SEE SOME MOVEMENT")
-#me.move(300, 200)
-#me.move(10000, 19292)
-
 
 #Main Menu
 mainMenu()
+
+#dict example from https://www.w3schools.com/python/python_dictionaries.asp ; maybe use for items, locations
+thisdict =	{
+  "brand": "Ford",
+  "electric": False,
+  "year": 1964,
+  "colors": ["red", "white", "blue"]
+}
+#print(thisdict["brand"])
