@@ -4,16 +4,75 @@
 import time, random
 
 #functions
-def clearScreen():
+def clearScreen():#"CLEAR" TERMINAL SCREEN
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+
+def mainMenu():#MAIN MENU LOOP
+    while True:
+    #menu options
+        clearScreen()
+        print("Opportunities:\n")
+        print("1. Check in with friends")
+        print("2. Go somewhere")
+        print("3. What do we have?")
+        print("4. Socialize")
+        print("5. Exit")
+        print("- - - - -")
+        menuChoice = input()
+
+        #party stats
+        if menuChoice == "1":
+            clearScreen()
+            print("Party stats: \n")
+            for member in party:
+                member.stats()
+            print("- - - - -")
+            input("Press any key to continue.")
+
+        #move - not functional, yet. map locations to neighboring locations?
+        if menuChoice == "2":
+            moveChoice = 0
+            while moveChoice != "5":
+                clearScreen()
+                print("\n1. North")
+                print("\n2. South")
+                print("\n3. East")
+                print("\n4. West")
+                print("\n5. Stay put")
+                print("- - - - -")
+                moveChoice = input()
+
+        #inventory
+        if menuChoice == "3":
+            clearScreen()
+            print("Inventory:")
+            for member in party:
+                member.inventory()
+            input("Press any key to continue")
+        
+        #socialize
+        if menuChoice == "4":
+            clearScreen()
+            print("Socialize")
+            friend = Character(random.choice(first_names))
+            party.append(friend)
+            input("Press any key to stop socializing")
+
+        #exit
+        if menuChoice == "5":
+            clearScreen()
+            print("Goodbye!")
+            time.sleep(1)
+            break
 
 #locations
 location_list = ['Serbia', 'Albania', 'Helsingfors', 'Holy Roman Empire', 'the Hanseatic League', 'Prussia',
                  'Iceland', 'Tallinn', 'Estonia', 'Oklahoma', 'Colorado', 'Missouri', 'Viet Nam', 'Somalia', 'Prag', 'the Library',
                   'Scotland', 'Jõhvi', 'a cozy cave', 'the ocean', 'your family home', 'Corpus Cristi',
-                   'Japanese Korea', 'the European Union', 'Helsinki', 'Jüri', 'Dagö', 'the Cherokee Nation', 'Haapsalu Castle', 'Greece']
-location = random.choice(location_list)                 
-
+                   'Japanese Korea', 'the European Union', 'Helsinki', 'Jüri', 'Dagö', 'the Cherokee Nation', 'Haapsalu Castle', 'Greece',
+                   'Iran', 'Iraq', 'Uzbekistan', 'Tajikistan', 'Samarkhand', 'Trondheim', 'Istanbul', 'Barcelona', 'Croatia',
+                   'the Cyclades', 'Cyprus', 'Brazil', 'Angola', 'Kongo', 'Babylon', 'the River Styx', 'Tasmania', 'Viimsi', 'Hungary']                 
+startLocation = random.choice(location_list)
 # dict.items() -> [(Serbia, (0, 0)),]
 # dict.keys() -> [Serbia, Albania, ...]
 # dict.values() -> [(0, 0), (10,10), ...]
@@ -27,9 +86,11 @@ last_names = ['al Sharif', 'Hughes', 'Replogle', 'Thunderstone', 'Birdwatcher', 
                 'Gustafsson', 'Lepp', 'Cluff', 'Schröder', 'Pätt', 'Muzzini', 'Türi', 'Põder', 'Nemec', 'Pärt', 'Šuligoj', 'Salieri',
                  'Sarić', 'Đorđević', 'Smiljić', 'Pavlović Carevac', 'Čkalja', 'Nyary', 'Daniels', 'McClellan', 'Tostodoro',]
 
-#map Replaced with Locations, not using X-Y coordinates at the moment
 #MAP_SIZE = {"x": 1000, "y": 1000}
 
+#conditions
+conditions = ['tired', 'mad', 'angry', 'drunk', 'excited', 'happy', 'generous', 'wakeful', 'vengeful', 'ambitious', 'curious', 'creative',
+                '', 'absentminded', 'sorrowful', 'ruminating', 'paralyzed']
 
 #Character template - players and NPCs
 class Character:
@@ -40,15 +101,28 @@ class Character:
         self.y = 0
         self.money = 1
         self.level = 1
-
+        self.age = random.randint(18, 90)
+        self.possessions = ["clothes", "shoes"]
+        self.languages = []
+        self.hometown = random.choice(location_list)
+        self.condition = random.choice(conditions)
     #show character stats
     def stats(self):
-        print("Name: " + str(self.first_name) + " " + str(self.last_name))
-        print("Position: (" + str(self.x) + "," + str(self.y) + ")")
-        print("Money: " + str(self.money))
-        print("Level: " + str(self.level))
+        print("----------" + str(self.first_name) + " " + str(self.last_name) + " from " + str(self.hometown))
+        #print("Location: (" + str(self.x) + "," + str(self.y) + ")")
+        print("Money    : " + str(self.money))
+        print("Level    : " + str(self.level))
+        print("Age      : " + str(self.age) + " years old")
+        print("Condition: " + str(self.condition))
         #return self.first_name, self.level
-        
+
+    #inventory
+    def inventory(self):
+        print("---------" + str(self.first_name) + " " + str(self.last_name))
+        for item in self.possessions:
+            print(str(item))
+
+    #add money to character
     def add_money(self, amount):
         self.money += amount
 
@@ -70,14 +144,14 @@ year = random.randrange(700,2080,1)
 #start
 clearScreen()
 print("- - - - -")
-print("July 23rd, by Caleb")
+print("Curious Explorer, by Caleb")
 print("- - - - -")
 time.sleep(2)
 clearScreen()
-
-print("Welcome to " + location + ".\n" + "Thank you for being here!\n")
-time.sleep(2)
+print("Welcome to " + startLocation + ".")
+time.sleep(1)
 print("The year is " + str(year) + ".")
+time.sleep(2)
 first_name = input("What is your name, traveler?\n")
 me = Character(first_name)
 party = []
@@ -109,38 +183,4 @@ for i in range(partysize):
 
 
 #Main Menu
-while True:
-    #menu options
-    clearScreen()
-    print("Opportunities:\n")
-    print("1. Check in with friends")
-    print("2. Go somewhere")
-    print("3. What do we have?")
-    print("4.")
-    print("5. Exit")
-    print("- - - - -")
-    menuChoice = input()
-    
-    #party stats
-    if menuChoice == "1":
-        clearScreen()
-        print("Party stats: \n")
-        for member in party:
-            member.stats()
-        print("- - - - -")
-        input("Press ENTER to continue.")
-    #move - not functional, yet
-    if menuChoice == "2":
-        clearScreen()
-        moveChoice = 0
-        while moveChoice != "5":
-            print("\n1. North")
-            print("\n2. South")
-            print("\n3. East")
-            print("\n4. West")
-            print("\n5. Stay put")
-            print("- - - - -")
-            moveChoice = input()
-    #exit
-    if menuChoice == "5":
-        break
+mainMenu()
