@@ -1,10 +1,10 @@
 #to-do is in github commit history
 #libraries
-import time, random, PySimpleGUI as SG
-#time is for terminal's waiting
-#random is for random number generation, random choice from names, etc.
-#PySimpleGUI is the graphical user interface. I want to upgrade this game from text-based to window-based.
-
+import time #for making the game "wait"
+import random #for random numbers, choosing random name from a list, etc
+import PySimpleGUI as SG #graphic user interface for making the game run in a window
+import json #usd for save and load game data
+#from locations import * #locations.py for game locations, their languages, culture etc
 #functions
 def clearScreen():#prints a looot of new lines to "clear" the terminal
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
@@ -78,9 +78,6 @@ location_list = ['Serbia', 'Albania', 'Helsingfors', 'Holy Roman Empire', 'the H
                    'Iran', 'Iraq', 'Uzbekistan', 'Tajikistan', 'Samarkhand', 'Trondheim', 'Istanbul', 'Barcelona', 'Croatia',
                    'the Cyclades', 'Cyprus', 'Brazil', 'Angola', 'Kongo', 'Babylon', 'the River Styx', 'Tasmania', 'Viimsi', 'Hungary']                 
 startLocation = random.choice(location_list)#User begins the game in a random location from the list
-# dict.items() -> [(Serbia, (0, 0)),]
-# dict.keys() -> [Serbia, Albania, ...]
-# dict.values() -> [(0, 0), (10,10), ...]
 
 #names - possible names of Characters
 first_names = ['Daniel', 'Dante', 'Borges', 'Lukas', 'Henri', 'Robert', 'Dalisa', 'Abdulhakim', 'Griffin', 'Cole', 'Jonsch', 'Jacob', 'Mark', 'Jackie', 'Martha', 'Rozhan', 'Gvantsa', 'Mati', 'Artur',
@@ -90,8 +87,6 @@ first_names = ['Daniel', 'Dante', 'Borges', 'Lukas', 'Henri', 'Robert', 'Dalisa'
 last_names = ['al Sharif', 'Hughes', 'Replogle', 'Thunderstone', 'Birdwatcher', 'Kivimägi', 'Khachapuridze', 'Kebabian', 'Russell', 'Janssen',
                 'Gustafsson', 'Lepp', 'Cluff', 'Schröder', 'Pätt', 'Muzzini', 'Türi', 'Põder', 'Nemec', 'Pärt', 'Šuligoj', 'Salieri',
                  'Sarić', 'Đorđević', 'Smiljić', 'Pavlović Carevac', 'Čkalja', 'Nyary', 'Daniels', 'McClellan', 'Tostodoro',]
-
-#MAP_SIZE = {"x": 1000, "y": 1000}
 
 #conditions - mood / health attirbutes experienced by characters
 conditions = ['tired', 'mad', 'angry', 'drunk', 'excited', 'happy', 'generous', 'wakeful', 'vengeful', 'ambitious', 'curious', 'creative',
@@ -108,8 +103,9 @@ class Character:
         self.level = 1
         self.age = random.randint(18, 90)#Character's age is between 18 and 90 years old
         self.possessions = ["clothes", "shoes"]#possessions[] is the Character's inventory
-        self.languages = []
+        self.languages = []#first language comes from Character's hometown; more can be added to list later during game
         self.hometown = random.choice(location_list)
+        #self.hometown = (random.choice(locationList)).name
         self.condition = "normal"
     #show character stats
     def stats(self):
@@ -144,6 +140,7 @@ class Character:
         self.x = x
         self.y = y
         print("NEW POSITION: ", self.x, self.y)
+
 
 #year
 year = random.randrange(700,2080,1)#Game year begins between 700 and 2080.
@@ -181,12 +178,3 @@ for i in range(partysize):#create a user character party that is the size of par
 
 #Main Menu
 mainMenu()
-
-#dict example from https://www.w3schools.com/python/python_dictionaries.asp ; maybe use for items, locations
-thisdict =	{
-  "brand": "Ford",
-  "electric": False,
-  "year": 1964,
-  "colors": ["red", "white", "blue"]
-}
-#print(thisdict["brand"])
