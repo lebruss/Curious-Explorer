@@ -129,14 +129,14 @@ class Language:
         language_list.append(self)
 
 location_list = []
-class Location:
+class Location():
     name = ""
     capital = Coordinate(0, 0)#gets assigned during the game
     languages = []
     forenames = []
     surnames = []
     def __init__(self):
-        location_list.append(self)
+        location_list = location_list.append(Location((self)))
 
 
 #Serbia
@@ -185,9 +185,9 @@ class Character:
         self.level = 1
         self.age = random.randint(18, 90)#Character's age is between 18 and 90 years old
         self.possessions = []#possessions[] is the Character's inventory
-        self.hometown = random.choice(location_list)
+        self.hometown = Location(random.choice(location_list))
         self.languages = []#first language comes from Character's hometown; more can be added to list later during game
-        self.languages.append(Language(random.choice(self.hometown.languages)))
+        self.languages.append(random.choice(self.hometown.languages))
         self.condition = "normal"
     #show character stats
     def stats(self):
@@ -210,21 +210,6 @@ class Character:
     #add money to character
     def add_money(self, amount):
         self.money += amount
-
-    #move() function; not in use yet. am working on Coordinate class instead.
-    def move(self, move_x, move_y):
-        x = self.x + move_x
-        y = self.y + move_y
-        self.x = x
-        self.y = y
-        print("NEW POSITION: ", self.x, self.y)
-
-    class Friend():
-        friendliness = 1#filler variable. not sure how I'll use this NPC class yet
-        def __init__(self):
-            self.first_name = random.choice(first_names)
-            self.last_name = random.choice(last_names)
-            self.hometown = random.choice(location_list)
         
 #start
 clearScreen()
@@ -251,8 +236,8 @@ while True:#How many friends are with you?
     clearScreen()
     #make party
     for i in range(partysize):#create a user character party; size is partysize variable
-        friend = Character.Friend()
-        party.append(Character.Friend())
+        friend = Character()
+        party.append(friend)
     break
 
 mainMenu()#run the main menu loop
