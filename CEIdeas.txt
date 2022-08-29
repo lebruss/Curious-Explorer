@@ -15,3 +15,5 @@ save and load game
         player stats
         player items
         more
+
+need to procedurally generate locations based on random x, y coordinates 
