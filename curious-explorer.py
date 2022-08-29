@@ -1,14 +1,14 @@
 #to-do is in github commit history
-#libraries
+#import python libraries and other files from Curious Explorer directory
 import time #for making the game "wait"
 import random #for random numbers, choosing random name from a list, etc
 import PySimpleGUI as SG #graphic user interface for making the game run in a window
-import json #usd for save and load game data
-#from locations import * #locations.py for game locations, their languages, culture etc
+import json #used for save and load game data
+import CEItems# items used in the game
+
 #functions
 def clearScreen():#prints a looot of new lines to "clear" the terminal
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-
 def mainMenu():#The game's main menu; user can navigate into and out of its options
     while True:
     #menu options
@@ -31,11 +31,12 @@ def mainMenu():#The game's main menu; user can navigate into and out of its opti
             print("- - - - -")
             input("Press any key to continue.")
 
-        #move - not functional, yet. map locations to neighboring locations?
+        #move the party
         if menuChoice == "2":
             moveChoice = 0
-            while moveChoice != "5":#Keep this menu open until the user chooses Option 5 for exiting the Move menu
+            while moveChoice != "5":#exit this menu if input = 5
                 clearScreen()
+                print(me.first_name + " and the others are at: (" + str(me.x) + "," + str(me.y) + ")")
                 print("\n1. North")
                 print("\n2. South")
                 print("\n3. East")
@@ -43,6 +44,26 @@ def mainMenu():#The game's main menu; user can navigate into and out of its opti
                 print("\n5. Stay put")
                 print("- - - - -")
                 moveChoice = input()
+                if str(moveChoice) =="1":#move North
+                    print("You move north.")
+                    for player in party:
+                        player.y = player.y + 1
+                    time.sleep(1)
+                if str(moveChoice) =="2":#move South
+                    print("You move south.")
+                    for player in party:
+                        player.y = player.y - 1
+                    time.sleep(1)
+                if str(moveChoice) =="3":#move East
+                    print("You move east.")
+                    for player in party:
+                        player.x = player.x + 1
+                    time.sleep(1)
+                if str(moveChoice) =="4":#move West
+                    print("You move west.")
+                    for player in party:
+                        player.x = player.x - 1
+                    time.sleep(1)
 
         #Inventory: show the Inventory item of each Character in the user's party[]
         if menuChoice == "3":
@@ -55,12 +76,18 @@ def mainMenu():#The game's main menu; user can navigate into and out of its opti
         #socialize - I want to depthen this one with chances, etc.
         if menuChoice == "4":
             clearScreen()
-            print("Socialize")
+            print("Socializing...")
             friend = Character(random.choice(first_names))#Create a new NPC character from "socializing" at this place
             party.append(friend)#add this new NPC character to your user party[]; they join your adventure
             time.sleep(random.randint(1,4))#wait, we are socializing
             print(friend.first_name + " has decided to tag along with y'all!")
-            input("Press any key to stop socializing")
+            randomGiftChance = random.randint(1,10)
+            if randomGiftChance > 5:#random gift from new friend
+                randomGift = random.choice(CEItems.itemsList)#gift from NPC is a random item from itemsList in CEITEMS.py
+                me.possessions.append(randomGift)#add the randomGift to the player's possessions[]
+                print(friend.first_name + " gives you a token of appreciation!: " + str(randomGift.name))
+                time.sleep(1)
+            input("Press ENTER to continue")
             #to-do: add some functionality about the player, or player's party, only able to welcome a new NPC if there is a common language
 
         #exit
@@ -69,6 +96,11 @@ def mainMenu():#The game's main menu; user can navigate into and out of its opti
             print("Goodbye!")
             time.sleep(1)
             break
+
+#Constants
+party = []#player party with self and NPCs
+partysize = 1
+year = random.randrange(700,2080,1)#Game year begins between 700 and 2080.
 
 #locations - Possible locations in the game, including the user's random starting location
 location_list = ['Serbia', 'Albania', 'Helsingfors', 'Holy Roman Empire', 'the Hanseatic League', 'Prussia',
@@ -92,7 +124,7 @@ last_names = ['al Sharif', 'Hughes', 'Replogle', 'Thunderstone', 'Birdwatcher', 
 conditions = ['tired', 'mad', 'angry', 'drunk', 'excited', 'happy', 'generous', 'wakeful', 'vengeful', 'ambitious', 'curious', 'creative',
                 '', 'absentminded', 'sorrowful', 'ruminating', 'paralyzed', 'normal']
 
-#Character template - user's and NPC's attributes, statistics, information about them used in the game
+#Character Class - user's and NPC's attributes, statistics, information about them used in the game
 class Character:
     def __init__(self, first_name):
         self.first_name = first_name
@@ -102,7 +134,7 @@ class Character:
         self.money = 1
         self.level = 1
         self.age = random.randint(18, 90)#Character's age is between 18 and 90 years old
-        self.possessions = ["clothes", "shoes"]#possessions[] is the Character's inventory
+        self.possessions = []#possessions[] is the Character's inventory
         self.languages = []#first language comes from Character's hometown; more can be added to list later during game
         self.hometown = random.choice(location_list)
         #self.hometown = (random.choice(locationList)).name
@@ -121,7 +153,7 @@ class Character:
     def inventory(self):
         print("---------" + str(self.first_name) + " " + str(self.last_name))
         for item in self.possessions:#for each item in the character's possessions[] list, print it
-            print(str(item))
+            print(str(item.name))
 
     #add money to character
     def add_money(self, amount):
@@ -141,10 +173,6 @@ class Character:
         self.y = y
         print("NEW POSITION: ", self.x, self.y)
 
-
-#year
-year = random.randrange(700,2080,1)#Game year begins between 700 and 2080.
-
 #start
 clearScreen()
 print("- - - - -")
@@ -157,24 +185,20 @@ time.sleep(1)
 print("The year is " + str(year) + ".")
 time.sleep(2)
 first_name = input("What is your name, traveler?\n")
-me = Character(first_name)
-party = []
-party.append(me)#add the user's character to the Party list of characters.
+me = Character(first_name)#Generate player's character using Character Class and first_name input.
+party.append(me)#add the user's character to the party[] list of characters.
 time.sleep(1)
-
-#How many friends
-while True:
+while True:#How many friends are with you?
     try:
         partysize = int(input("\nHow many friends are with you? "))
-        break
     except ValueError:#if user doesn't enter a valid integer input for partysize variable, prompt the user until input is acceptable
-        print("Please enter an integer so we can continue.")
-time.sleep(1)
-clearScreen()
-#make party
-for i in range(partysize):#create a user character party that is the size of partysize variable (including the user character me)
-    friend = Character(random.choice(first_names))#generate a friend Character with a random first name.
-    party.append(friend)
+        print("Please try again with an integer.")
+    clearScreen()
+    #make party
+    for i in range(partysize):#create a user character party that is the size of partysize variable (including the user character me)
+        friend = Character(random.choice(first_names))#generate a friend Character with a random first name.
+        friend.possessions.append(random.choice(CEItems.itemsList))
+        party.append(friend)
+    break
 
-#Main Menu
-mainMenu()
+mainMenu()#run the main menu loop

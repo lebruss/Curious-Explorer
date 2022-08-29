@@ -1,0 +1,17 @@
+map: x, y
+    locations contain x and y coordinates
+    How to tell if a map unit borders another?
+    something like:
+        Location A and Location B 
+        A is (0,0), B is (1,0)
+        a.x = 0 and a.y = 0
+        b.x = 1 and b.y = 0
+    countries' possessed territories can be a list of tuples:
+        Albania.territories = [(0,1), (0,2), (1,1)]
+    How to visualize the map for players?
+save and load game
+    use JSON dump?
+    things to save:
+        player stats
+        player items
+        more
