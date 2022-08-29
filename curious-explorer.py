@@ -5,12 +5,13 @@ import random #for random numbers, choosing random name from a list, etc
 import PySimpleGUI as SG #graphic user interface for making the game run in a window
 import json #used for save and load game data
 import CEItems# items used in the game; CEItems.py
+'''IDK how to do splash screens yet
 from PIL import Image#for opening photo files
 splashScreen = Image.open('art1.png')
 splashScreen.show()
 time.sleep(1)
 splashScreen.close()
-
+'''
 #functions
 def clearScreen():#prints a looot of new lines to "clear" the terminal
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
@@ -27,21 +28,23 @@ def mainMenu():#The game's main menu; user can navigate into and out of its opti
         print("- - - - -")
         menuChoice = input()
 
-        #party stats
+        #Check in with friends
         if menuChoice == "1":
             clearScreen()
             print("Party stats: \n")
             for member in party:#for each Character in the party[] list, print their statistics with member.stats()
                 member.stats()
+                time.sleep(1)
             print("- - - - -")
             input("Press any key to continue.")
 
-        #move the party
+        #Go somewhere
         if menuChoice == "2":
             moveChoice = 0
             while moveChoice != "5":#exit this menu if input = 5
                 clearScreen()
-                print(me.first_name + " and the others are at: (" + str(me.x) + "," + str(me.y) + ")")
+                #main menu for moving
+                print(me.first_name + " and the others are at: " + str(me.myCoordinate.printCoordinate()))#print character's coordinate
                 print("\n1. North")
                 print("\n2. South")
                 print("\n3. East")
@@ -52,22 +55,22 @@ def mainMenu():#The game's main menu; user can navigate into and out of its opti
                 if str(moveChoice) =="1":#move North
                     print("You move north.")
                     for player in party:
-                        player.y = player.y + 1
+                        player.myCoordinate.y = player.myCoordinate.y + 1
                     time.sleep(1)
                 if str(moveChoice) =="2":#move South
                     print("You move south.")
                     for player in party:
-                        player.y = player.y - 1
+                        player.myCoordinate.y = player.myCoordinate.y - 1
                     time.sleep(1)
                 if str(moveChoice) =="3":#move East
                     print("You move east.")
                     for player in party:
-                        player.x = player.x + 1
+                        player.myCoordinate.x = player.myCoordinate.x + 1
                     time.sleep(1)
                 if str(moveChoice) =="4":#move West
                     print("You move west.")
                     for player in party:
-                        player.x = player.x - 1
+                        player.myCoordinate.x = player.myCoordinate.x - 1
                     time.sleep(1)
 
         #Inventory: show the Inventory item of each Character in the user's party[]
@@ -78,11 +81,14 @@ def mainMenu():#The game's main menu; user can navigate into and out of its opti
                 member.inventory()#print Inventory items in list for each party[] member
             input("Press any key to continue")
         
-        #socialize - I want to depthen this one with chances, etc.
+        #socialize - Add a new randomized NPC to your party!
         if menuChoice == "4":
             clearScreen()
             print("Socializing...")
-            friend = Character(random.choice(first_names))#Create a new NPC character from "socializing" at this place
+            friend = Character.Friend()#Create a new NPC character from "socializing" at this place
+            friend.hometown = Location(random.choice(location_list))
+            friend.languages.append(random.choice(friend.hometown.languages))
+            friend.possessions.append(CEItems.Item(random.choice(CEItems.itemsList)))
             party.append(friend)#add this new NPC character to your user party[]; they join your adventure
             time.sleep(random.randint(1,4))#wait, we are socializing
             print(friend.first_name + " has decided to tag along with y'all!")
@@ -102,19 +108,56 @@ def mainMenu():#The game's main menu; user can navigate into and out of its opti
             time.sleep(1)
             break
 
+class Coordinate():
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    def printCoordinate(self):
+        print("(" + str(self.x) + "," + str(self.y) + ")")
+
+
 #Constants
 party = []#player party with self and NPCs
 partysize = 1
 year = random.randrange(700,2080,1)#Game year begins between 700 and 2080.
+                
+#Languages in the game. Used by locations and Characters
+language_list = []
+class Language:
+    def __init__(self, name):
+        self.name = name
+        language_list.append(self)
 
-#locations - Possible locations in the game, including the user's random starting location
-location_list = ['Serbia', 'Albania', 'Helsingfors', 'Holy Roman Empire', 'the Hanseatic League', 'Prussia',
-                 'Iceland', 'Tallinn', 'Estonia', 'Oklahoma', 'Colorado', 'Missouri', 'Viet Nam', 'Somalia', 'Prag', 'the Library',
-                  'Scotland', 'Jõhvi', 'a cozy cave', 'the ocean', 'your family home', 'Corpus Cristi',
-                   'Japanese Korea', 'the European Union', 'Helsinki', 'Jüri', 'Dagö', 'the Cherokee Nation', 'Haapsalu Castle', 'Greece',
-                   'Iran', 'Iraq', 'Uzbekistan', 'Tajikistan', 'Samarkhand', 'Trondheim', 'Istanbul', 'Barcelona', 'Croatia',
-                   'the Cyclades', 'Cyprus', 'Brazil', 'Angola', 'Kongo', 'Babylon', 'the River Styx', 'Tasmania', 'Viimsi', 'Hungary']                 
-startLocation = random.choice(location_list)#User begins the game in a random location from the list
+location_list = []
+class Location:
+    name = ""
+    capital = Coordinate(0, 0)#gets assigned during the game
+    languages = []
+    forenames = []
+    surnames = []
+    def __init__(self):
+        location_list.append(self)
+
+
+#Serbia
+Serbia = Location()
+Serbia.name = "Serbia"
+Serbian = Language("Serbian")
+Serbia.languages.append(Serbian)
+
+#Albania
+Albania = Location()
+Albania.name = "Albania"
+Albanian = Language("Albanian")
+Albania.languages.append(Albanian)
+
+#Helsingfors
+Helsingfors = Location()
+Helsingfors.name = "Helsingfors"
+Swedish = Language("Swedish")
+Helsingfors.languages.append(Swedish)
+Finnish = Language("Finnish")
+Helsingfors.languages.append(Finnish)
 
 #names - possible names of Characters
 first_names = ['Daniel', 'Dante', 'Borges', 'Lukas', 'Henri', 'Robert', 'Dalisa', 'Abdulhakim', 'Griffin', 'Cole', 'Jonsch', 'Jacob', 'Mark', 'Jackie', 'Martha', 'Rozhan', 'Gvantsa', 'Mati', 'Artur',
@@ -129,30 +172,34 @@ last_names = ['al Sharif', 'Hughes', 'Replogle', 'Thunderstone', 'Birdwatcher', 
 conditions = ['tired', 'mad', 'angry', 'drunk', 'excited', 'happy', 'generous', 'wakeful', 'vengeful', 'ambitious', 'curious', 'creative',
                 '', 'absentminded', 'sorrowful', 'ruminating', 'paralyzed', 'normal']
 
+startLocation = random.choice(location_list)
+startLocation.capital = Coordinate(0,0)
+
 #Character Class - user's and NPC's attributes, statistics, information about them used in the game
 class Character:
-    def __init__(self, first_name):
-        self.first_name = first_name
+    def __init__(self):
+        self.first_name = ""
         self.last_name = random.choice(last_names)
-        self.x = 0
-        self.y = 0
+        self.myCoordinate = Coordinate(0, 0)
         self.money = 1
         self.level = 1
         self.age = random.randint(18, 90)#Character's age is between 18 and 90 years old
         self.possessions = []#possessions[] is the Character's inventory
-        self.languages = []#first language comes from Character's hometown; more can be added to list later during game
         self.hometown = random.choice(location_list)
-        #self.hometown = (random.choice(locationList)).name
+        self.languages = []#first language comes from Character's hometown; more can be added to list later during game
+        self.languages.append(Language(random.choice(self.hometown.languages)))
         self.condition = "normal"
     #show character stats
     def stats(self):
-        print("----------" + str(self.first_name) + " " + str(self.last_name) + " from " + str(self.hometown))#e.g. Leb Jones from Tallinn
+        print("----------" + str(self.first_name) + " " + str(self.last_name) + " from " + str(self.hometown.name))#e.g. Leb Jones from Tallinn
         #print("Location: (" + str(self.x) + "," + str(self.y) + ")")
         print("Money    : " + str(self.money))
         print("Level    : " + str(self.level))
         print("Age      : " + str(self.age) + " years old")
         print("Condition: " + str(self.condition))
-        #return self.first_name, self.level
+        print("Languages: ")
+        for language in self.languages:
+            print(str(language.name))
 
     #inventory
     def inventory(self):
@@ -164,20 +211,21 @@ class Character:
     def add_money(self, amount):
         self.money += amount
 
-    #move() function; not in use yet.
+    #move() function; not in use yet. am working on Coordinate class instead.
     def move(self, move_x, move_y):
         x = self.x + move_x
         y = self.y + move_y
-        #if (x < 0 or x > MAP_SIZE["x"] or y < 0 or y > MAP_SIZE["y"]):
-            #print("YOU WILL FALL OFF THE FLAT EARTH! DONT GO THERE")
-            #return
-        #print("LETS SEE SOME MOVEMENT")
-        #me.move(300, 200)
-        #me.move(10000, 19292)
         self.x = x
         self.y = y
         print("NEW POSITION: ", self.x, self.y)
 
+    class Friend():
+        friendliness = 1#filler variable. not sure how I'll use this NPC class yet
+        def __init__(self):
+            self.first_name = random.choice(first_names)
+            self.last_name = random.choice(last_names)
+            self.hometown = random.choice(location_list)
+        
 #start
 clearScreen()
 print("- - - - -")
@@ -185,12 +233,14 @@ print("Curious Explorer, by Caleb")
 print("- - - - -")
 time.sleep(2)
 clearScreen()
-print("Welcome to " + startLocation + ".")
+print("Welcome to " + str(startLocation.name) + ".")
 time.sleep(1)
 print("The year is " + str(year) + ".")
 time.sleep(2)
-first_name = input("What is your name, traveler?\n")
-me = Character(first_name)#Generate player's character using Character Class and first_name input.
+me = Character()#Generate player's character using Character Class and first_name input.
+me.first_name = input("What is your name, traveler?\n")
+me.languages.append((random.choice(me.hometown.languages)))
+me.hometown = startLocation
 party.append(me)#add the user's character to the party[] list of characters.
 time.sleep(1)
 while True:#How many friends are with you?
@@ -200,10 +250,9 @@ while True:#How many friends are with you?
         print("Please try again with an integer.")
     clearScreen()
     #make party
-    for i in range(partysize):#create a user character party that is the size of partysize variable (including the user character me)
-        friend = Character(random.choice(first_names))#generate a friend Character with a random first name.
-        friend.possessions.append(random.choice(CEItems.itemsList))
-        party.append(friend)
+    for i in range(partysize):#create a user character party; size is partysize variable
+        friend = Character.Friend()
+        party.append(Character.Friend())
     break
 
 mainMenu()#run the main menu loop

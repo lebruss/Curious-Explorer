@@ -14,6 +14,7 @@ class Location:
     surnames = []
     def __init__(self, name):
         self.name = name
+        locations.append(self)
 
 
 

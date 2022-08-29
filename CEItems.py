@@ -4,17 +4,36 @@ def printHi():
     input()
 
 itemsList = []#list of game items
+weaponsList = []#list of game weapons
+clothesList = []#list of wearable items
 
 class Item:
     def __init__(self, name):
         self.name = name
         itemsList.append(self)#add the item to the itemsList[]
+    class Weapon:
+        def __init__(self, name, power, IsMelee, IsRanged):
+            self.name = name
+            self.power = power
+            IsMelee = False
+            IsRanged = False
+            weaponsList.append(self)
+    class Clothing:
+        def __init__(self, name, power):
+            self.name = name
+            self.power = power
+            self.coldResistance = 1
+            self.fashionrating = 1
+            clothesList.append(self)
 
-BlackShoes = Item("black shoes")
+BlackShoes = Item.Clothing("black shoes", 1)
 
-Sword = Item("sword")
+Sword = Item.Weapon("sword", 5, True, False)
 
 Paper = Item("paper")
 
 Ink = Item("ink")
 
+Dagger = Item.Weapon("dagger", 3, True, False)
+
+Crossbow = Item.Weapon("crossbow", 3, False, True)
