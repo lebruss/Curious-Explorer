@@ -4,7 +4,12 @@ import time #for making the game "wait"
 import random #for random numbers, choosing random name from a list, etc
 import PySimpleGUI as SG #graphic user interface for making the game run in a window
 import json #used for save and load game data
-import CEItems# items used in the game
+import CEItems# items used in the game; CEItems.py
+from PIL import Image#for opening photo files
+splashScreen = Image.open('art1.png')
+splashScreen.show()
+time.sleep(1)
+splashScreen.close()
 
 #functions
 def clearScreen():#prints a looot of new lines to "clear" the terminal
