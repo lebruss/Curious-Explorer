@@ -78,8 +78,6 @@ for i in range(partysize):
     friend = Character(random.choice(first_names))
     party.append(friend)
     
-for member in party:
-    member.stats()
 
 #print an example Character with all stats
 me.stats()
@@ -88,4 +86,31 @@ print("LETS SEE SOME MOVEMENT")
 me.move(300, 200)
 me.move(10000, 19292)
 
-input()
+
+#Main Menu
+while True:
+    #menu options
+    print("\n1 Stats.")
+    print("\n2. Move")
+    print("\n3.")
+    print("\n4.")
+    print("\n5.")
+    print("- - - - -")
+    menuChoice = input()
+    
+    #party stats
+    if menuChoice == "1":
+        for member in party:
+            member.stats()
+        print("- - - - -")
+    #move
+    if menuChoice == "2":
+        moveChoice = 0
+        while moveChoice != "5":
+            print("\n1. North")
+            print("\n2. South")
+            print("\n3. East")
+            print("\n4. West")
+            print("\n5. Stay put")
+            print("- - - - -")
+            moveChoice = input()
