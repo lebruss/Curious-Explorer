@@ -1,20 +1,24 @@
-#to-do is in github commit history
-#import python libraries and other files from Curious Explorer directory
+
+
 import time #for making the game "wait"
 import random #for random numbers, choosing random name from a list, etc
 import PySimpleGUI as SG #graphic user interface for making the game run in a window
 import json #used for save and load game data
 import CEItems# items used in the game; CEItems.py
-'''IDK how to do splash screens yet
+
+'''
+IDK how to do splash screens yet
 from PIL import Image#for opening photo files
 splashScreen = Image.open('art1.png')
 splashScreen.show()
 time.sleep(1)
 splashScreen.close()
 '''
+
 #functions
 def clearScreen():#prints a looot of new lines to "clear" the terminal
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+
 def mainMenu():#The game's main menu; user can navigate into and out of its options
     while True:
     #menu options
@@ -52,6 +56,7 @@ def mainMenu():#The game's main menu; user can navigate into and out of its opti
                 print("\n5. Stay put")
                 print("- - - - -")
                 moveChoice = input()
+                
                 if str(moveChoice) =="1":#move North
                     print("You move north.")
                     for player in party:
@@ -128,15 +133,17 @@ class Language:
         self.name = name
         language_list.append(self)
 
+
 location_list = []
 class Location():
-    name = ""
-    capital = Coordinate(0, 0)#gets assigned during the game
-    languages = []
-    forenames = []
-    surnames = []
     def __init__(self):
-        location_list = location_list.append(Location((self)))
+        self.name = ""
+        self.capital = Coordinate(0, 0)#gets assigned during the game
+        self.languages = []
+        self.forenames = []
+        self.surnames = []
+
+        # location_list = location_list.append(Location((self)))
 
 
 #Serbia
@@ -189,6 +196,7 @@ class Character:
         self.languages = []#first language comes from Character's hometown; more can be added to list later during game
         self.languages.append(random.choice(self.hometown.languages))
         self.condition = "normal"
+    
     #show character stats
     def stats(self):
         print("----------" + str(self.first_name) + " " + str(self.last_name) + " from " + str(self.hometown.name))#e.g. Leb Jones from Tallinn
@@ -219,15 +227,21 @@ print("- - - - -")
 time.sleep(2)
 clearScreen()
 print("Welcome to " + str(startLocation.name) + ".")
+
 time.sleep(1)
+
 print("The year is " + str(year) + ".")
+
 time.sleep(2)
+
 me = Character()#Generate player's character using Character Class and first_name input.
 me.first_name = input("What is your name, traveler?\n")
 me.languages.append((random.choice(me.hometown.languages)))
 me.hometown = startLocation
 party.append(me)#add the user's character to the party[] list of characters.
+
 time.sleep(1)
+
 while True:#How many friends are with you?
     try:
         partysize = int(input("\nHow many friends are with you? "))
