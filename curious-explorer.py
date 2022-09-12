@@ -95,14 +95,18 @@ def mainMenu():#The game's main menu; user can navigate into and out of its opti
             friend.languages.append(random.choice(friend.hometown.languages))
             friend.possessions.append(CEItems.Item(random.choice(CEItems.itemsList)))
             party.append(friend)#add this new NPC character to your user party[]; they join your adventure
+            
             time.sleep(random.randint(1,4))#wait, we are socializing
+            
             print(friend.first_name + " has decided to tag along with y'all!")
             randomGiftChance = random.randint(1,10)
+            
             if randomGiftChance > 5:#random gift from new friend
                 randomGift = random.choice(CEItems.itemsList)#gift from NPC is a random item from itemsList in CEITEMS.py
                 me.possessions.append(randomGift)#add the randomGift to the player's possessions[]
                 print(friend.first_name + " gives you a token of appreciation!: " + str(randomGift.name))
                 time.sleep(1)
+            
             input("Press ENTER to continue")
             #to-do: add some functionality about the player, or player's party, only able to welcome a new NPC if there is a common language
 
@@ -118,7 +122,7 @@ class Coordinate():
         self.x = x
         self.y = y
     def printCoordinate(self):
-        print("(" + str(self.x) + "," + str(self.y) + ")")
+        print(f'{self.x}, {self.y}')
 
 
 #Constants
@@ -131,11 +135,11 @@ language_list = []
 class Language:
     def __init__(self, name):
         self.name = name
-        language_list.append(self)
+        language_list.append(self.name)
 
 
 location_list = []
-class Location():
+class Location:
     def __init__(self):
         self.name = ""
         self.capital = Coordinate(0, 0)#gets assigned during the game
@@ -143,28 +147,39 @@ class Location():
         self.forenames = []
         self.surnames = []
 
-        # location_list = location_list.append(Location((self)))
-
-
-#Serbia
-Serbia = Location()
-Serbia.name = "Serbia"
-Serbian = Language("Serbian")
-Serbia.languages.append(Serbian)
+# location_list.append(Location())        
+        
+#Serbia        
+class Serbia(Location):
+    def __init__(self):
+        super().__init__()
+        self.name = 'Serbia'
+        self.Serbian = Language("Serbian")
+        self.languages.append(self.Serbian)
 
 #Albania
-Albania = Location()
-Albania.name = "Albania"
-Albanian = Language("Albanian")
-Albania.languages.append(Albanian)
+class Albania(Location):
+    def __init__(self):
+        super().__init__()
+        self.name = 'Albania'
+        self.Albanian = Language("Albanian")
+        self.languages.append(self.Albanian)
 
 #Helsingfors
-Helsingfors = Location()
-Helsingfors.name = "Helsingfors"
-Swedish = Language("Swedish")
-Helsingfors.languages.append(Swedish)
-Finnish = Language("Finnish")
-Helsingfors.languages.append(Finnish)
+class Helsingfors(Location):
+    def __init__(self):
+        super().__init__()
+        self.name = 'Helsingfors'
+        self.Swedish = Language("Swedish")
+        self.Finnish = Language("Finnish")
+
+        self.languages.append(self.Swedish)
+        self.languages.append(self.Finnish)
+
+location_list.append(Serbia())
+location_list.append(Albania())
+location_list.append(Helsingfors())
+
 
 #names - possible names of Characters
 first_names = ['Daniel', 'Dante', 'Borges', 'Lukas', 'Henri', 'Robert', 'Dalisa', 'Abdulhakim', 'Griffin', 'Cole', 'Jonsch', 'Jacob', 'Mark', 'Jackie', 'Martha', 'Rozhan', 'Gvantsa', 'Mati', 'Artur',
@@ -192,7 +207,7 @@ class Character:
         self.level = 1
         self.age = random.randint(18, 90)#Character's age is between 18 and 90 years old
         self.possessions = []#possessions[] is the Character's inventory
-        self.hometown = Location(random.choice(location_list))
+        self.hometown = random.choice(location_list)
         self.languages = []#first language comes from Character's hometown; more can be added to list later during game
         self.languages.append(random.choice(self.hometown.languages))
         self.condition = "normal"
@@ -218,23 +233,28 @@ class Character:
     #add money to character
     def add_money(self, amount):
         self.money += amount
-        
-#start
+
+# --- --- --- --- --- --- --- --- ---
+
+#START
 clearScreen()
-print("- - - - -")
-print("Curious Explorer, by Caleb")
-print("- - - - -")
+
+print(f'- - - - -\nCurious Explorer\nby Caleb\n- - - - -')
+
 time.sleep(2)
+
 clearScreen()
-print("Welcome to " + str(startLocation.name) + ".")
+
+print(f'Welcome to {startLocation.name}.')
 
 time.sleep(1)
 
-print("The year is " + str(year) + ".")
+print(f'The year is {year}.')
 
 time.sleep(2)
 
-me = Character()#Generate player's character using Character Class and first_name input.
+#Generate player's character using Character Class and first_name input.
+me = Character()
 me.first_name = input("What is your name, traveler?\n")
 me.languages.append((random.choice(me.hometown.languages)))
 me.hometown = startLocation
