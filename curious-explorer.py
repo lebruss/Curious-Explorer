@@ -1,148 +1,149 @@
-
-
-import time #for making the game "wait"
-import random #for random numbers, choosing random name from a list, etc
-import PySimpleGUI as SG #graphic user interface for making the game run in a window
-import json #used for save and load game data
-import CEItems# items used in the game; CEItems.py
-
-'''
-
-sg.theme('DarkAmber')   # Add a touch of color
-# All the stuff inside your window.
-layout = [  [sg.Text('Some text on Row 1')],
-            [sg.Text('Enter something on Row 2'), sg.InputText()],
-            [sg.Button('Ok'), sg.Button('Cancel')] ]
+import time  # for making the game "wait"
+import random  # for random numbers, choosing random name from a list, etc
+import PySimpleGUI as sg  # graphic user interface for making the game run in a window
+import json  # used for save and load game data
+import CEItems  # items used in the game; CEItems.py
+import CERndnames_conditions as rnc
 
 '''
 
-# Functions 
-def clearScreen(): #prints a looot of new lines to "clear" the terminal
-    print('\n'*30)
+'''
 
-def mainMenu(): #The game's main menu; user can navigate into and out of its options
+# Functions
+def clearScreen():  # prints a looot of new lines to "clear" the terminal
+    print('\n ' * 30)
+
+
+def mainMenu():  # The game's main menu; user can navigate into and out of its options
     while True:
-    #menu options
-        clearScreen()
+        try:  # Opportunities GUI, menu options
+            layout = [
+                [sg.Text(
+                    '1. Check in with friends\n'  # Player /NPC statistics
+                    '2. Go somewhere\n'  # travel
+                    '3. What do we have?\n'  # inventory
+                    '4. Socialize\n'  # Meet another NPC in the current location
+                    '5. Exit')],  # Exit Game
+                [sg.InputText('')],
+                [sg.Ok()]
+            ]
 
-        try:
-            menuChoice = int(
-                input(
-                f'Opportunities:\n'
-                f'1. Check in with friends\n' # Player and NPC friends statistics
-                f'2. Go somewhere\n' # travel
-                f'3. What do we have?\n' # inventory
-                f'4. Socialize\n' # Try to meet another NPC in the current location
-                f'5. Exit\n' # Exit the game completely
-                f'- - - - -\n'
-                ))
-            time.sleep(2)
+            window = sg.Window('Opportunities:', layout)
+            event = window.read()
+            window.close()
+
+            menuChoice = int((event[1])[0])
 
         except ValueError:
-            print('- - - - -\nPlease try again with an integer.\n')
-            menuChoice = 0   
-            time.sleep(2)        
+            sg.popup('Please try again with an integer.')
+            menuChoice = 0
 
-        #Check in with friends
+            # Check in with friends
         if menuChoice == 1:
-            clearScreen()
-
-            print("Party stats:")
-            for member in party:# for each Character in party[] list, print stats
+            for member in party:  # for each Character in party[] list, print stats
                 member.stats()
-                time.sleep(1)
-            input("- - - - -\n'ENTER' to continue.\n")
 
-        #Go somewhere
+        # Go somewhere
         if menuChoice == 2:
-            moveChoice = 0
+            # main menu for moving
+            while True:  # exit this menu if input = 5
+                try:  # print character's coordinate and move choices
+                    layout = [
+                        [sq.Text(
+                            f'{me.first_name} and the others are at: '
+                            f'{me.myCoordinate.printCoordinate()}\n'
+                            '\n1. North\n'
+                            '2. South\n'
+                            '3. East\n'
+                            '4. West\n'
+                            '5. Stay put\n')],
+                        [sg.InputText()]
+                        [sg.Ok()]
+                    ]
 
-            #main menu for moving
-            while moveChoice != "5":# exit this menu if input = 5
-                clearScreen()
+                    window = sg.Window('Location', layout)
+                    value = window.read()
+                    window.close()
 
-                # print character's coordinate and move choices
-                try:
-                    moveChoice = int(input(
-                        f'{me.first_name} and the others are at: '
-                        f'{me.myCoordinate.printCoordinate()}\n'
-                        f'\n1. North\n'
-                        f'2. South\n'
-                        f'3. East\n'
-                        f'4. West\n'
-                        f'5. Stay put\n'
-                        f'- - - - -\n'
-                        ))
-                    time.sleep(1) 
+                    moveChoice = int((value[1])[0])
 
                 except ValueError:
-                    print('- - - - -\nPlease try again with an integer.\n')
-                    time.sleep(2) 
-                
-                if moveChoice == 1: #move North
-                    print("You move north.")
+                    sg.popup('Please try again with an integer.')
+
+                if moveChoice == 1:  # move North
+                    sg.popup('You move north.')
                     for player in party:
                         player.myCoordinate.y += 1
-                    time.sleep(1)
 
-                if moveChoice == 2: #move South
-                    print("You move south.")
+                if moveChoice == 2:  # move South
+                    sg.popup('You move south.')
                     for player in party:
                         player.myCoordinate.y -= 1
-                    time.sleep(1)
 
-                if moveChoice == 3: #move East
-                    print("You move east.")
+                if moveChoice == 3:  # move East
+                    sg.popup('You move east.')
                     for player in party:
                         player.myCoordinate.x += 1
-                    time.sleep(1)
 
-                if moveChoice == 4: #move West
-                    print("You move west.")
+                if moveChoice == 4:  # move West
+                    sg.popup('You move west.')
                     for player in party:
                         player.myCoordinate.x -= 1
-                    time.sleep(1)
 
+                if moveChoice == 5:
+                    sg.popup('You stay put.')
+                    break
 
-        #Inventory: show the Inventory item of each Character in the user's party[]
+        # Inventory: show the Inventory item of each Character in the user's party[]
         if menuChoice == 3:
-            clearScreen()
-            print("Inventory:")
             for member in party:
-                member.inventory()#print Inventory items in list for each party[] member
+                member.inventory()  # print items in list for each party[] member
             input("Press any key to continue")
-        
-        #socialize - Add a new randomized NPC to your party!
+
+        # socialize - Add a new randomized NPC to your party!
         if menuChoice == 4:
             clearScreen()
+
             print("Socializing...")
-            friend = Character.Friend() # Create a new NPC character from "socializing" at this place
-            friend.hometown = Location(random.choice(location_list))
-            friend.languages.append(random.choice(friend.hometown.languages))
-            friend.possessions.append(CEItems.Item(random.choice(CEItems.itemsList)))
-            party.append(friend) # add this new NPC character to your user party[]; they join your adventure
-            
-            time.sleep(random.randint(1,4)) # wait, we are socializing
-            
-            print(friend.first_name + " has decided to tag along with y'all!")
-            randomGiftChance = random.randint(1,10)
-            
-            if randomGiftChance > 5: # random gift from new friend
-                randomGift = random.choice(CEItems.itemsList) # ift from NPC is a random item from itemsList in CEITEMS.py
-                me.possessions.append(randomGift) # add the randomGift to the player's possessions[]
-                print(friend.first_name + " gives you a token of appreciation!: " + str(randomGift.name))
+            friend_npc = Character()  # Create a new NPC character from "socializing" at this place
+            friend_npc.first_name = random.choice(rnc.first_names)
+            friend_npc.languages.append(random.choice(friend_npc.hometown.languages))
+            friend_npc.possessions.append(CEItems.Item(random.choice(CEItems.itemsList)))
+            party.append(friend_npc)  # add new NPC character to user party[]
+
+            time.sleep(random.randint(1, 4))  # wait, we are socializing
+
+            print(f"{friend_npc.first_name} has decided to tag along with y'all!")
+            randomGiftChance = random.randint(1, 10)
+
+            if randomGiftChance > 5:  # random gift from new friend
+                randomGift = random.choice(CEItems.itemsList)  # gift is random item from CEItems.py
+                me.possessions.append(randomGift)  # add the randomGift to the player's possessions[]
+                print(f'{friend_npc.first_name} gives you a token of appreciation!: {randomGift.name}')
+
                 time.sleep(1)
-            
+
             input("Press ENTER to continue")
-            # to-do: add some functionality about the player, or player's party, only able to welcome a new NPC if there is a common language
+            # to-do: add some functionality about the player, or player's party, only able to welcome a new
+            # NPC if there is a common language
 
         # exit
         if menuChoice == 5:
             clearScreen()
             print("Goodbye!")
+
             time.sleep(1)
             break
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Constants
+party = []  # player party with self and NPCs
+partysize = 1
+year = random.randrange(700, 2080, 1)  # Game year begins between 700 and 2080.
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Classes Coordinates, Language, Location, Serbia(Location), Albania(Location), Helsingfors(Location)
 class Coordinate:
     def __init__(self, x, y):
         self.x = x
@@ -152,13 +153,10 @@ class Coordinate:
         return f'(X: {self.x}, Y: {self.y})'
 
 
-# Constants
-party = [] # player party with self and NPCs
-partysize = 1
-year = random.randrange(700,2080,1) # Game year begins between 700 and 2080.
-                
 # Languages in the game. Used by locations and Characters
 language_list = []
+
+
 class Language:
     def __init__(self, name):
         self.name = name
@@ -166,17 +164,19 @@ class Language:
 
 
 location_list = []
+
+
 class Location:
     # Parent class with default attributes
     # to work out self.capital
 
     def __init__(self):
         self.name = ""
-        self.capital = Coordinate(0, 0)# gets assigned during the game
+        self.capital = Coordinate(0, 0)  # gets assigned during the game
         self.languages = []
         self.forenames = []
         self.surnames = []
-   
+
 # Serbia        
 class Serbia(Location):
     # Serbia child class
@@ -209,129 +209,120 @@ class Helsingfors(Location):
         self.languages.append(self.Swedish)
         self.languages.append(self.Finnish)
 
-# appends 
+
+# Appends
 location_list.append(Serbia())
 location_list.append(Albania())
 location_list.append(Helsingfors())
 
-
-# names - possible names of Characters
-first_names = [
-    'Daniel', 'Dante', 'Borges', 'Lukas', 'Henri', 'Robert', 
-    'Dalisa', 'Abdulhakim', 'Griffin', 'Cole', 'Jonsch', 'Jacob', 
-    'Mark', 'Jackie', 'Martha', 'Rozhan', 'Gvantsa', 'Mati', 
-    'Artur', 'Gabriel', 'Tanya', 'Thanh', 'Tamar', 'Saba', 
-    'Ngabo', 'Shpeta', 'Florian', 'Ott', 'Aili', 'Tom', 
-    'Ann', 'Hans', 'Hayder', 'Valdimaar', 'Amadeus', 'Todd', 
-    'Markko', 'Lil Al', 'Stefan', 'Klajd', 'Tonibler', 'Joonas', 
-    'Peeter', 'Düüri', 'Arpad', 'Denis', 'Ädu', 'Vlad', 
-    'Tristan', 'Hiroki', 'Bohdan', 'Stone', 'River', 'Harry', 
-    'Jesse', 'Jason', 'Liam', 'Siim'
-    ]
-
-last_names = [
-    'al Sharif', 'Hughes', 'Replogle', 'Thunderstone', 'Birdwatcher', 'Kivimägi', 
-    'Khachapuridze', 'Kebabian', 'Russell', 'Janssen', 'Gustafsson', 'Lepp', 
-    'Cluff', 'Schröder', 'Pätt', 'Muzzini', 'Türi', 'Põder', 
-    'Nemec', 'Pärt', 'Šuligoj', 'Salieri', 'Sarić', 'Đorđević', 
-    'Smiljić', 'Pavlović Carevac', 'Čkalja', 'Nyary', 'Daniels', 'McClellan', 
-    'Tostodoro',
-    ]
-
-# conditions - mood / health attirbutes experienced by characters
-conditions = [
-    'tired', 'mad', 'angry', 'drunk', 'excited', 'happy', 
-    'generous', 'wakeful', 'vengeful', 'ambitious', 'curious', 'creative', 
-    '', 'absentminded', 'sorrowful', 'ruminating', 'paralyzed', 'normal'
-    ]
-
+# startLocation
 startLocation = random.choice(location_list)
-startLocation.capital = Coordinate(0,0)
+startLocation.capital = Coordinate(0, 0)
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Character Class - user's and NPC's attributes, statistics, information about them used in the game
 class Character:
     def __init__(self):
         self.first_name = ""
-        self.last_name = random.choice(last_names)
+        self.last_name = random.choice(rnc.last_names)
         self.myCoordinate = Coordinate(0, 0)
         self.money = 1
         self.level = 1
-        self.age = random.randint(18, 90) # Character's age is between 18 and 90 years old
-        self.possessions = [] # possessions[] is the Character's inventory
+        self.age = random.randint(18, 90)  # Character's age is between 18 and 90 years old
+        self.possessions = []  # possessions[] is the Character's inventory
         self.hometown = random.choice(location_list)
-        self.languages = [] # first language comes from Character's hometown; more can be added to list later during game
+        self.languages = []  # first language from Character's hometown; more can be added to list during game
         self.languages.append(random.choice(self.hometown.languages))
         self.condition = "normal"
-    
+
     # show character stats
     def stats(self):
-        ## e.g. Leb Jones from Tallinn
+        # e.g. Leb Jones from Tallinn
         # f'Location\t {self.x}, {self.y}'
-        print(
-            f'\n---------- {self.first_name} {self.last_name} from {self.hometown.name}\n'
-            f'Money\t\t: {self.money}\n'
-            f'Level\t\t: {self.level}\n'
-            f'Age\t\t: {self.age} years old\n'
-            f'Condition\t: {self.condition}\n'
-            f'Languages\t: '
-            )
-        
-        for language in self.languages:
-            print(f'\t\t{language.name}')
+        layout = [
+            [sg.Text(
+                f'\n--- {self.first_name} {self.last_name} from {self.hometown.name} ---\n'
+                f'Money\t\t: {self.money}\n'
+                f'Level\t\t: {self.level}\n'
+                f'Age\t\t\t: {self.age} years old\n'
+                f'Condition\t: {self.condition}\n'
+                f'Languages\t: {self.languages}\n'
+                f'Location\t: {self.myCoordinate.printCoordinate()}')],
+            [sg.Ok()]
+        ]
+
+        # for language in self.languages:
+        #     print(f'\t\t{language.name}')
+
+        window = sg.Window('Party stats:', layout)
+        window.read()
+        window.close()
 
     # inventory
     def inventory(self):
-        print(f'--------- {self.first_name} {self.last_name}')
-        for item in self.possessions: # for each item in the character's possessions[] list, print it
-            print(str(item.name))
+        print("Inventory:")
+        print(f' - - - {self.first_name} {self.last_name}')
+        for item in self.possessions:  # for each item in the character's possessions[] list, print it
+            print(item)
 
     # add money to character
     def add_money(self, amount):
         self.money += amount
 
-# --- --- --- --- --- --- --- --- ---
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # START
 clearScreen()
 
-print(f'- - - - -\nCurious Explorer\nby Caleb\n- - - - -')
+# simple popup windows with text, buttons and images
 
-time.sleep(1)
+layout = [[sg.Image(r'art1.png')],  # every element is on its own separate line. Image*
+          [sg.Text('- - by Caleb & Friends - -')],  # Text*
+          [sg.Ok()]]  # button 'Ok'. returns str 'Ok' from window.read() 'Ok' button press
 
-clearScreen()
+window = sg.Window('Curious Explorer', layout)
+window.read()  # returns  event, value = ('Ok', {0: 'name'}) | event = 'ok', value = {0: 'name'}
+window.close() # Always close()
 
-print(f'Welcome to {startLocation.name}.')
+# just a simple popup with text
+sg.popup(f'Welcome to {startLocation.name}.\n'
+         f'The year is {year}.')
 
-time.sleep(1)
+layout = [[sg.InputText('')],
+          [sg.Ok()]]
 
-print(f'The year is {year}.')
+window = sg.Window('What is your name, traveler?', layout)
+values = window.read()
+window.close()
 
-time.sleep(1)
-
-# Generate player's character using Character Class and first_name input.
+# Generate player's character using Character Class.
 me = Character()
-me.first_name = input("What is your name, traveler?\n")
+me.first_name = (values[1])[0]  # window return values -> name
 me.languages.append((random.choice(me.hometown.languages)))
 me.hometown = startLocation
-party.append(me) # add the user's character to the party[] list of characters.
+party.append(me)  # add the user's character to the party[].
 
-time.sleep(1)
 
-while True: # How many friends are with you?
+while True:  # How many friends are with you?
     try:
-        partysize = int(input("\nHow many friends are with you?\n"))
-        time.sleep(2)
+        layout = [[sg.InputText('')],
+                  [sg.Ok()]]
+
+        window = sg.Window('How many friends are with you?', layout)
+        values = window.read()
+        window.close()
+
+        partysize = int((values[1])[0])
+        # time.sleep(2)
         break
 
-    except ValueError: # if user doesn't enter a valid integer input for partysize variable, prompt the user until input is acceptable
-        print("Please try again with an integer.")
-        time.sleep(2)
-
-    clearScreen()
+    except ValueError:  # if ValuError print msg, sleep and restart while loop
+        sg.popup('Please try again with an integer.')
 
 # make party
-for i in range(partysize): # create a user character party; size is partysize variable
+for i in range(partysize):  # create a user character party; size is partysize variable
     friend = Character()
     party.append(friend)
 
-mainMenu() # run the main menu loop
+mainMenu()  # run the main menu loop
